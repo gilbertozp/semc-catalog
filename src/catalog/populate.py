@@ -61,7 +61,7 @@ from semcatalog.settings import BASE_DIR
 
 PASSWORD = 'CRD-SEMC_VerySecretPassword1234'
 
-def populate_from_csv(source_filename=os.path.join( os.path.join(BASE_DIR, os.pardir), 'data', 'catalog_v0.1_gspreadsheets_export_2015-03-30.csv')):
+def populate_from_csv(source_filename=os.path.join(os.path.join(BASE_DIR, os.pardir, os.pardir), 'data', 'catalog_v0.1_gspreadsheets_export_2015-03-30.csv')):
     """
     Populates DB from csv (export from google spreadsheets catalog)
 
