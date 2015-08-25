@@ -66,7 +66,7 @@ import json
 
 
 
-BASE_URL = 'http://localhost:8000/catalog/{s}/{c}/'
+BASE_URL = 'http://crd-software.lbl.gov/catalog/{s}/{c}/'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('softwareid', metavar="SOFTWAREID", help="Software ID", type=str, nargs=1)
     args = parser.parse_args()
 
-    request_url =  BASE_URL.format(s=args.softwareid[0], c=args.command[0])
+    request_url = BASE_URL.format(s=args.softwareid[0], c=args.command[0])
 
     if args.command[0] == 'get_count':
         r = requests.get(request_url)

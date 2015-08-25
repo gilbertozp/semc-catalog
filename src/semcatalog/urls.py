@@ -55,8 +55,10 @@ from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    
+
     url(r'^$', 'catalog.views.index', name='index'),
+    url(r'^list_commands/$', 'catalog.views.list_commands', name='list'),
+    url(r'^list_software/$', 'catalog.views.list_software', name='list'),
     url(r'^catalog/$', RedirectView.as_view(url='../', permanent=True), name='index'),
     url(r'^catalog/(?P<slug>[a-zA-Z0-9-]+)/$', 'catalog.views.software_details', name='software'),
     url(r'^catalog/(?P<slug>[a-zA-Z0-9-]+)/(?P<format>[a-zA-Z0-9-]+)/$', 'catalog.views.software_details', name='software'),

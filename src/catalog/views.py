@@ -56,6 +56,41 @@ from django.utils import timezone
 
 from catalog.models import Software
 
+def list_commands(request):
+    """
+    Returns list of commands available
+    """
+    hostname = request.get_host()
+
+    command_list = {'command_list': [
+        hostname + '/' + "list_commands",
+        hostname + '/' + "catalog/list_software",
+        hostname + '/' + "catalog/SOFTWAREID/software_details",
+        hostname + '/' + "catalog/SOFTWAREID/get_download_count",
+        hostname + '/' + "catalog/SOFTWAREID/add_download_count",
+        hostname + '/' + "catalog/SOFTWAREID/set_password",
+    ]}
+    return JsonResponse(command_list)
+
+def list_software(request):
+    """
+    Returns list of software available in catalog
+    """
+    hostname = request.get_host()
+
+    software = Software.objects.all()
+
+    software_list = {'software_list': [{'id': s.slug,
+                                        'name': s.name,
+                                        'description': s.description,
+                                        'url': hostname + '/catalog/' + s.slug,
+                                        'url_src': s.url_src,
+                                        'url_issue': s.url_issue,
+                                        'department': s.department,
+                                        'contacts': [c.name + ' <' + c.email + '>' for c in s.contacts.all()]
+                                        } for s in software]}
+    return JsonResponse(software_list)
+
 def index(request):
     """
     Main page with list of softwares in catalog
