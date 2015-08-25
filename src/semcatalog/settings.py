@@ -9,6 +9,16 @@ from semcatalog.local import SECRET_KEY
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+PRODUCTION_HOST_NAME = 'babe.lbl.gov'
+
+# gets FQDN to determine production server
+import socket
+if socket.getfqdn() == PRODUCTION_HOST_NAME:
+    PRODUCTION = True
+    BASE_LOG = '/var/log/django'
+else:
+    PRODUCTION = False
+    BASE_LOG = BASE_DIR
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -78,7 +88,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATIC_URL = '/static/'
+# URLs
+STATIC_URL = '/media/'
 MEDIA_URL = STATIC_URL + 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static') + '/',)
+if PRODUCTION:
+    MEDIA_ROOT = os.path.join(BASE_DIR, os.pardir, os.pardir, os.pardir, 'html', 'media', 'media')
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+    STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static') + '/',)
+
+# email
+DEFAULT_FROM_EMAIL = "no-reply@crd-software.lbl.gov"
+EMAIL_SUBJECT_PREFIX = '[CRD-Software]'
+if PRODUCTION:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = False
+    EMAIL_HOST = 'smtp.lbl.gov'
+    EMAIL_PORT = '25'
+#     EMAIL_HOST_USER -- defined in protected password file / or not defined (no authentication)
+#     EMAIL_HOST_PASSWORD -- defined in protected password file / or not defined (no authentication)
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = '/Users/gilberto/Documents/dev/ameriflux_svn/ameriflux/python/fit/static/email'
