@@ -1,0 +1,12 @@
+/*
+<-- add to admin.py -->
+class ClassAdmin(admin.ModelAdmin):
+    class Media:
+        css = {
+            'all': ('css/wordwrap.css',)
+        }
+*/
+td {
+    /* max-width: 200px; */
+    word-break: break-all;
+}

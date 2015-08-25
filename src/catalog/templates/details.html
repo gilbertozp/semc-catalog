@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %} {{software.name}} - Details {% endblock %}
+
+{% block body %}
+<h1 style="color:#555555;">{{software.name}}</h1>
+
+<p>
+<ul style="list-style-type:none;">
+<li style="color:#555555;">
+<b>Description:</b></br>
+{{software.description}}
+</li></br>
+
+<li style="color:#555555;">
+<b>Department:</b></br>
+{% if software.department %}{{software.department}}{% else %}<i>(not set)</i>{% endif %}
+</li></br>
+
+<li style="color:#555555;">
+<b>Downloads:</b></br>
+<ul style="list-style-type:none;">
+{% for dl in software.downloadcount_set.all %}
+<li>{{dl.count}} download{{dl.count|pluralize}} (<i>as of {{dl.valid_on}}</i>)</li>
+{% empty %}
+<li><i>(download records not available)</i></li>
+{% endfor %}
+</ul>
+</li></br>
+
+<li style="color:#555555;">
+<b>Web URL:</b></br>
+{% if software.url %}<a style="color:#555555;" href="{{software.url}}">{{software.url}}</a>{% else %}<i>(unavailable)</i>{% endif %}
+</li></br>
+
+<li style="color:#555555;">
+<b>Source URL:</b></br>
+{% if software.url_src %}<a style="color:#555555;" href="{{software.url_src}}">{{software.url_src}}</a>{% else %}<i>(unavailable)</i>{% endif %}
+</li></br>
+
+<li style="color:#555555;">
+<b>Issue Tracking URL:</b></br>
+{% if software.url_issue %}<a style="color:#555555;" href="{{software.url_issue}}">{{software.url_issue}}</a>{% else %}<i>(unavailable)</i>{% endif %}
+</li></br>
+
+<li style="color:#555555;">
+<b>Contacts:</b></br>
+<ul style="list-style-type:none;">
+{% for c in software.contacts.all %}
+<li>{{c.name}} &lt;{{c.email}}&gt;</li>
+{% empty %}
+<i>(download records not available)</i>
+{% endfor %}
+</ul>
+</li></br>
+
+</ul>
+</p>
+
+
+{% endblock %}

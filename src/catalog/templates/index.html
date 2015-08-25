@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block addhead %}
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="/static/js/jquery.js"></script>
+<script type="text/javascript" charset="utf8" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block title %} Software List {% endblock %}
+
+{% block body %}
+
+<script type="text/javascript" charset="utf8">
+$(document).ready( function () {
+    $('#catalog').DataTable( {
+        paging: false,
+        searching: true,
+    } );
+});
+</script>
+
+<h1 style="color:#555555;">&nbsp;&nbsp;Software List (SEMC Software Catalog)</h1>
+
+<table id="catalog" class="display">
+<thead>
+<tr>
+<th>Software name</th>
+<th width=50%>Description (web/source)</th>
+<th>Department</th>
+<th>Downloads (update date)</th>
+<th>Contacts</th>
+</tr>
+</thead>
+
+<tbody>
+{% for software in software_list %}
+<tr>
+<td><a href="./catalog/{{software.slug}}/" style="color:#555555;">{{software.name}}</a></td>
+<td id="description">{{software.description}}</br>
+&nbsp;&nbsp;web: {% if software.url %}<a href="{{software.url}}">{{software.url}}</a> {% else %}<i>no link</i>{% endif %}</br>
+&nbsp;&nbsp;source: {% if software.url_src %}<a href="{{software.url_src}}">{{software.url_src}}</a>{% else %}<i>no source</i>{% endif %}</br>
+&nbsp;&nbsp;issue-track: {% if software.url_issue %}<a href="{{software.url_issue}}">{{software.url_issue}}</a>{% else %}<i>no issue tracking</i>{% endif %}
+</td>
+<td>{{software.department}}</td>
+<td><b>{{software.downloads_recent.count}}</b></br>{{software.downloads_recent.valid_on|date:"N j, Y"}}</td>
+<td>{{software.all_contacts}}</td>
+</tr>
+{% empty %}
+<tr>
+<td><i>nothing to see here...</i><td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
