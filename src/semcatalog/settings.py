@@ -9,7 +9,7 @@ from semcatalog.local import SECRET_KEY
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-PRODUCTION_HOST_NAME = 'crd-software.lbl.gov'
+PRODUCTION_HOST_NAME = 'babe.lbl.gov'
 
 # gets FQDN to determine production server
 import socket
