@@ -1,2 +1,8 @@
 # semc-catalog
-Software catalog for Software Engineering and Management Committee (SEMC)
+Software catalog for the Software Engineering and Management Committee (SEMC)
+
+# Installation
+- [ ] TODO
+
+# API
+- [ ] TODO
