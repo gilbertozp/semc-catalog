@@ -90,12 +90,12 @@ USE_TZ = True
 
 # URLs
 if PRODUCTION:
-    STATIC_URL = '/media/'
+    STATIC_URL = '/files/'
     MEDIA_URL = STATIC_URL + 'media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, os.pardir, os.pardir, os.pardir, 'html', 'media', 'media')
-    STATIC_ROOT = os.path.join(BASE_DIR, os.pardir, os.pardir, os.pardir, 'html', 'media')
+    MEDIA_ROOT = os.path.join(BASE_DIR, os.pardir, os.pardir, os.pardir, 'html', 'files', 'media')
+    STATIC_ROOT = os.path.join(BASE_DIR, os.pardir, os.pardir, os.pardir, 'html', 'files')
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = '/files/'
     MEDIA_URL = STATIC_URL + 'media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
     STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static') + '/',)
