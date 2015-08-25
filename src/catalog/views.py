@@ -63,12 +63,13 @@ def list_commands(request):
     hostname = request.get_host()
 
     command_list = {'command_list': [
-        hostname + '/' + "list_commands",
-        hostname + '/' + "catalog/list_software",
-        hostname + '/' + "catalog/SOFTWAREID/software_details",
-        hostname + '/' + "catalog/SOFTWAREID/get_download_count",
-        hostname + '/' + "catalog/SOFTWAREID/add_download_count",
-        hostname + '/' + "catalog/SOFTWAREID/set_password",
+        {'command': 'list_commands', 'url': hostname + '/' + "list_commands", },
+        {'command': 'list_software', 'url': hostname + '/' + "list_software", },
+        {'command': 'software_details', 'url': hostname + '/' + "catalog/SOFTWAREID/software_details", },
+        {'command': 'get_count', 'url': hostname + '/' + "catalog/SOFTWAREID/get_count", },
+        {'command': 'add_count', 'url': hostname + '/' + "catalog/SOFTWAREID/add_count", },
+        {'command': 'del_count', 'url': hostname + '/' + "catalog/SOFTWAREID/del_count", },
+        {'command': 'set_password', 'url': hostname + '/' + "catalog/SOFTWAREID/set_password", },
     ]}
     return JsonResponse(command_list)
 
@@ -80,14 +81,15 @@ def list_software(request):
 
     software = Software.objects.all()
 
-    software_list = {'software_list': [{'id': s.slug,
-                                        'name': s.name,
+    software_list = {'software_list': [{'software id': s.slug,
+                                        'software name': s.name,
                                         'description': s.description,
-                                        'url': hostname + '/catalog/' + s.slug,
-                                        'url_src': s.url_src,
-                                        'url_issue': s.url_issue,
-                                        'department': s.department,
-                                        'contacts': [c.name + ' <' + c.email + '>' for c in s.contacts.all()]
+                                        'web URL': hostname + '/catalog/' + s.slug,
+                                        'source URL': s.url_src,
+                                        'issue tracking URL': s.url_issue,
+                                        'LBNL department': s.department,
+                                        'contacts': [c.name + ' <' + c.email + '>' for c in s.contacts.all()],
+                                        "download counts":[{'count':e.count, 'timestamp':e.valid_on.strftime("%Y%m%dT%H%M%S")} for e in s.downloadcount_set.all()],
                                         } for s in software]}
     return JsonResponse(software_list)
 
@@ -121,34 +123,39 @@ def software_details(request, slug, rformat='html'):
         return response
     elif rformat.lower() == 'json':
         software_data = {software.slug: {
-            "Software Name": software.name,
-            "Software ID": software.slug,
-            "Description": software.description,
-            "LBNL Department": software.department,
-            "Web URL": software.url,
-            "Source URL": software.url_src,
-            "Issue Tracking URL": software.url_issue,
-            "Contacts": [{'Name':c.name, 'Email':c.email} for c in software.contacts.all()],
-            "Download Counts":[{'Count':e.count, 'Timestamp':e.valid_on.strftime("%Y%m%dT%H%M%S")} for e in software.downloadcount_set.all()],
+            "software name": software.name,
+            "software id": software.slug,
+            "description": software.description,
+            "LBNL department": software.department,
+            "web URL": software.url,
+            "source URL": software.url_src,
+            "issue tracking URL": software.url_issue,
+            "contacts": [{'Name':c.name, 'Email':c.email} for c in software.contacts.all()],
+            "download counts":[{'count':e.count, 'timestamp':e.valid_on.strftime("%Y%m%dT%H%M%S")} for e in software.downloadcount_set.all()],
         }, }
         return JsonResponse(software_data)
     else:
         raise Http404
 
 
-def software_get_download_count(request, slug):
+def software_get_download_count(request, slug, timestamp=None):
     """
     Returns most recent download count for software and timestamp when valid
     
     :param slug: slug from software name
     :type slug: str
     """
+    print(timestamp)
     if request.method == 'GET':
         software = get_object_or_404(Software, slug=slug)
-        download_count = software.downloads_recent()
+        if timestamp is None:
+            download_count = software.downloads_recent()
+        else:
+            download_count = software.downloads_timestamp(timestamp)
+
         if download_count:
             count = download_count.count
-            timestamp = download_count.valid_on.strftime("%Y-%m-%d %H:%M:%S%z")
+            timestamp = download_count.valid_on.strftime("%Y%m%dT%H%M%S")
         else:
             count = 'no downloads'
             timestamp = ''
@@ -159,7 +166,7 @@ def software_get_download_count(request, slug):
 
 
 
-def software_add_download_count(request, slug):#, password, timestamp=timezone.now().strftime("%Y-%m-%d %H:%M:%S%z")):
+def software_add_download_count(request, slug, password, timestamp=timezone.now().strftime("%Y%m%dT%H%M%S")):
     """
     Adds download count for software with timestamp when valid (default now)
     
@@ -172,8 +179,21 @@ def software_add_download_count(request, slug):#, password, timestamp=timezone.n
     """
     return
 
+def software_del_download_count(request, slug, password, timestamp=None):
+    """
+    Removes download count for software with timestamp when valid (default most recent)
+    
+    :param slug: slug from software name
+    :type slug: str
+    :param password: default secret password for updates to software
+    :type password: str
+    :param timestamp: timestamp of download counts to be removed
+    :type timestamp: str
+    """
+    return
 
-def software_set_password(request, slug):#, old_password, new_password):
+
+def software_set_password(request, slug, old_password, new_password):
     """
     Updates default password for changes to software with new password 
     
@@ -185,3 +205,4 @@ def software_set_password(request, slug):#, old_password, new_password):
     :type new_password: str
     """
     return
+

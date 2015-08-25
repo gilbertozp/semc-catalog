@@ -52,9 +52,6 @@ import argparse
 import requests # TODO: test import
 import json
 
-# TODO: get_list of software
-# TODO: get_list of API commands
-# TODO: delete download_count entry
 # TODO: add version to sw
 # TODO: download counts only ----------
 # TODO: API for updates to other fields
@@ -64,26 +61,69 @@ import json
 # TODO: add continuous integration / testing (travis/github, bamboo/bitbucket) -- Shreyas will help
 # TODO: reports (to tech transfer) what info: (check with Tech Transfer on formats Dan, Hari) -- look into forms
 
+BASE_URL_CMD = 'http://crd-software.lbl.gov/{c}/'
+BASE_URL_ENTRY_CMD = 'http://crd-software.lbl.gov/catalog/{s}/{c}/'
+BASE_URL_ENTRY_CMD_TS = 'http://crd-software.lbl.gov/catalog/{s}/{c}/{t}'
 
-
-BASE_URL = 'http://crd-software.lbl.gov/catalog/{s}/{c}/'
+#BASE_URL_CMD = 'http://localhost:8000/{c}/'
+#BASE_URL_ENTRY_CMD = 'http://localhost:8000/catalog/{s}/{c}/'
+#BASE_URL_ENTRY_CMD_TS = 'http://localhost:8000/catalog/{s}/{c}/{t}'
 
 if __name__ == '__main__':
+
+    request_url = BASE_URL_CMD.format(c='list_commands')
+    r = requests.get(request_url)
+    commands = json.loads(r.text)['command_list']
+    command_list = [c['command'] for c in commands]
+
+    choices = ['get_count', 'add_count', 'set_password']
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', metavar="COMMAND", help="Main command to be executed", choices=['get_count', 'add_count', 'set_password'], type=str, nargs=1)
-    parser.add_argument('softwareid', metavar="SOFTWAREID", help="Software ID", type=str, nargs=1)
+    parser.add_argument('command', metavar="COMMAND", help="Main command to be executed", choices=command_list, type=str, nargs=1)
+    parser.add_argument('softwareid', metavar="SOFTWAREID", help="Software ID", type=str, nargs='*')
+    parser.add_argument('-t', '--timestamp', metavar="TIMESTAMP", help="TIMESTAMP", type=str)
     args = parser.parse_args()
 
-    request_url = BASE_URL.format(s=args.softwareid[0], c=args.command[0])
+    # list commands
+    if args.command[0] == 'list_commands':
+        for c in command_list:
+            print(c)
 
-    if args.command[0] == 'get_count':
+    # list software
+    elif args.command[0] == 'list_software':
+        request_url = BASE_URL_CMD.format(c='list_software')
+        r = requests.get(request_url)
+        software = json.loads(r.text)['software_list']
+        for s in software:
+            for k, v in s.items():
+                if not isinstance(v, list):
+                    print(k, ': ', (v.encode('utf-8') if v is not None else ''))
+            print()
+
+    # get count
+    elif args.command[0] == 'get_count':
+        if not args.softwareid:
+            sys.exit("ERROR: no software ID provided")
+        request_url = BASE_URL_ENTRY_CMD.format(s=args.softwareid[0], c=args.command[0])
+        if args.timestamp:
+            request_url = request_url + '?timestamp=' + args.timestamp
+        print(request_url)
         r = requests.get(request_url)
         info = json.loads(r.text)
         print(info['download count'])
+
+    # add count
     elif args.command[0] == 'add_count':
         print('NOT IMPLEMENTED')
+
+    # del count
+    elif args.command[0] == 'del_count':
+        print('NOT IMPLEMENTED')
+
+    # set password
     elif args.command[0] == 'set_password':
         print('NOT IMPLEMENTED')
+
+    # unknown command
     else:
         sys.exit("ERROR: unknown command '{c}'".format(c=args.command[0]))
 

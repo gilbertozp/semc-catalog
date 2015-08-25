@@ -53,6 +53,7 @@ import sys
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from _datetime import datetime
 
 
 class Contact(models.Model):
@@ -119,6 +120,17 @@ class Software(models.Model):
         else:
             return None
 
+    def downloads_timestamp(self, timestamp):
+        """
+        Returns most recent download count and timestamp
+        """
+        ts = datetime.strptime(timestamp, '%Y%m%dT%H%M%S')
+        download_counts = self.downloadcount_set.get('valid_on={t}'.format(t=ts))
+        if download_counts:
+            return download_counts[0]
+        else:
+            return None
+
     @property
     def contact_list(self):
         """
@@ -130,7 +142,7 @@ class Software(models.Model):
         if result:
             result = result[:-2]
         return result
-            
+
 
 class DownloadCount(models.Model):
     """
