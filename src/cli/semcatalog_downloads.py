@@ -52,22 +52,13 @@ import argparse
 import requests # TODO: test import
 import json
 
-# TODO: add version to sw
-# TODO: download counts only ----------
-# TODO: API for updates to other fields
-#       -- google analytics as download count method
-#       -- statcounter.com (more site access, counter) (Hari)
-# TODO: You-Wei can help with testing
-# TODO: add continuous integration / testing (travis/github, bamboo/bitbucket) -- Shreyas will help
-# TODO: reports (to tech transfer) what info: (check with Tech Transfer on formats Dan, Hari) -- look into forms
+#BASE_URL_CMD = 'http://crd-software.lbl.gov/{c}/'
+#BASE_URL_ENTRY_CMD = 'http://crd-software.lbl.gov/catalog/{s}/{c}/'
+#BASE_URL_ENTRY_CMD_TS = 'http://crd-software.lbl.gov/catalog/{s}/{c}/{t}'
 
-BASE_URL_CMD = 'http://crd-software.lbl.gov/{c}/'
-BASE_URL_ENTRY_CMD = 'http://crd-software.lbl.gov/catalog/{s}/{c}/'
-BASE_URL_ENTRY_CMD_TS = 'http://crd-software.lbl.gov/catalog/{s}/{c}/{t}'
-
-#BASE_URL_CMD = 'http://localhost:8000/{c}/'
-#BASE_URL_ENTRY_CMD = 'http://localhost:8000/catalog/{s}/{c}/'
-#BASE_URL_ENTRY_CMD_TS = 'http://localhost:8000/catalog/{s}/{c}/{t}'
+BASE_URL_CMD = 'http://localhost:8000/{c}/'
+BASE_URL_ENTRY_CMD = 'http://localhost:8000/catalog/{s}/{c}/'
+BASE_URL_ENTRY_CMD_TS = 'http://localhost:8000/catalog/{s}/{c}/{t}'
 
 if __name__ == '__main__':
 
@@ -106,10 +97,10 @@ if __name__ == '__main__':
         request_url = BASE_URL_ENTRY_CMD.format(s=args.softwareid[0], c=args.command[0])
         if args.timestamp:
             request_url = request_url + '?timestamp=' + args.timestamp
-        print(request_url)
+#        print(request_url)
         r = requests.get(request_url)
         info = json.loads(r.text)
-        print(info['download count'])
+        print(info['download count'], info['download count timestamp'])
 
     # add count
     elif args.command[0] == 'add_count':
