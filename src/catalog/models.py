@@ -53,7 +53,7 @@ import sys
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-from _datetime import datetime
+from datetime import datetime
 
 
 class Contact(models.Model):
