@@ -4,3 +4,5 @@ src/semcatalog/local.py
 *.pyc
 
 *.sqlite3
+
+*.py~
